@@ -14,6 +14,7 @@ import { CategoriesIndexView } from './pages/Categories';
 import { CategoryDetailView } from './pages/CategoryDetail';
 import { AdminSecretDashboard } from './pages/AdminSecretDashboard';
 import { QuotePage } from './pages/QuotePage';
+import { db } from './databaseAdapter';
 
 export default function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -25,8 +26,41 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [quotePreselect, setQuotePreselect] = useState({ category: '', product: '' });
   
+  const [isAppLoading, setIsAppLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Load Initial Data
+  useEffect(() => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 10) + 5;
+      if (progress > 90) progress = 90;
+      setLoadingProgress(progress);
+    }, 150);
+
+    const loadData = async () => {
+      try {
+        await Promise.all([
+          db.doc('cms_general', 'navbar').get(),
+          db.doc('cms_general', 'hero').get(),
+          db.collection('cms_categories').get(),
+          db.collection('cms_services').get()
+        ]);
+      } catch (err) {
+        console.error("Failed to load initial data", err);
+      } finally {
+        clearInterval(interval);
+        setLoadingProgress(100);
+        setTimeout(() => setIsAppLoading(false), 600);
+      }
+    };
+
+    loadData();
+    return () => clearInterval(interval);
+  }, []);
 
   // Scroll effect
   useEffect(() => {
@@ -61,6 +95,39 @@ export default function App() {
   const isHome = location.pathname === '/';
   const isDashboard = location.pathname === '/admin-secret-dashboard';
 
+  if (isAppLoading) {
+    return (
+      <div className="fixed inset-0 bg-[#F4F6F8] z-[100] flex flex-col items-center justify-center font-body selection:bg-[#F5B800] selection:text-[#1F2933]">
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+          .font-heading { font-family: 'Outfit', sans-serif; }
+          .font-body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        `}</style>
+        
+        <div className="mb-8 animate-bounce">
+          <div className="w-24 h-24 bg-[#0B3D91] rounded-[2rem] flex items-center justify-center shadow-xl shadow-blue-900/20 border-4 border-white">
+            <span className="text-white font-heading font-extrabold text-3xl tracking-tight">ABS</span>
+          </div>
+        </div>
+        
+        <div className="text-[#0B3D91] font-heading font-bold text-2xl mb-8 tracking-tight">
+          ABS Tech is Loading
+        </div>
+        
+        <div className="w-64 md:w-80 h-3 bg-gray-200 rounded-full overflow-hidden relative shadow-inner">
+          <div 
+            className="absolute top-0 left-0 h-full bg-[#F5B800] transition-all duration-300 ease-out"
+            style={{ width: `${loadingProgress}%` }}
+          />
+        </div>
+        
+        <div className="mt-4 text-sm font-bold text-gray-400 font-heading tracking-widest">
+          {loadingProgress}%
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F4F6F8] font-body text-[#1F2933] selection:bg-[#F5B800] selection:text-[#1F2933]">
       <style>{`
@@ -70,7 +137,7 @@ export default function App() {
       `}</style>
 
       {/* WHATSAPP FLOATING BUTTON */}
-      <a href="https://wa.me/01718604464" target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-[90] group text-decoration-none">
+      <a href="https://wa.me/8801718604464" target="_blank" rel="noopener noreferrer" className="fixed bottom-6 right-6 z-[90] group text-decoration-none">
         <div className="bg-[#25D366] p-4 rounded-full shadow-[0_8px_30px_rgba(37,211,102,0.3)] text-white hover:scale-110 transition-transform relative flex items-center justify-center">
           <MessageCircle className="w-7 h-7" />
           <span className="absolute 0 right-0 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span></span>

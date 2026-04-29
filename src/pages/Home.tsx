@@ -310,7 +310,7 @@ export const HomeView = ({ navigateTo, openQuoteModalFor }: any) => {
                 <a href="tel:+8801718604464" className="bg-[#0B3D91] text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#1F2933] transition-colors shadow-lg">
                   <Phone className="w-5 h-5" /> Call Now
                 </a>
-                <a href="https://wa.me/01718604464" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#1DA851] transition-colors shadow-lg">
+                <a href="https://wa.me/8801718604464" target="_blank" rel="noopener noreferrer" className="bg-[#25D366] text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#1DA851] transition-colors shadow-lg">
                   <MessageCircle className="w-5 h-5" /> WhatsApp
                 </a>
               </div>
